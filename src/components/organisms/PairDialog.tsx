@@ -37,15 +37,24 @@ const SectionLabel = styled(Typography)(({ theme }) => ({
   lineHeight: 2,
 }));
 
-/* score card: centered giant serif number */
+/* score card: centered giant serif number, outlined but unfilled */
 const ScoreBox = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: 14,
   padding: theme.spacing(1.75, 2, 1.5),
   flex: 1,
   textAlign: "center",
-  backgroundColor: theme.palette.background.default,
 }));
+
+/* the "/100" denominator: quiet, serif, tinted like its score */
+const OutOf = styled("span")({
+  fontFamily: "'Fraunces', serif",
+  fontSize: 15,
+  fontWeight: 500,
+  opacity: 0.45,
+  marginLeft: 5,
+  letterSpacing: "0.02em",
+});
 
 export function PairDialog({
   a,
@@ -183,9 +192,7 @@ export function PairDialog({
                   }}
                 >
                   {Math.round(rp.r / 10)}
-                  <Typography component="span" sx={{ fontSize: 14, color: "text.secondary", ml: 0.4 }}>
-                    /100
-                  </Typography>
+                  <OutOf>/ 100</OutOf>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                   {rp.cooc.toLocaleString("en-US")} recipes together
@@ -203,9 +210,7 @@ export function PairDialog({
                   }}
                 >
                   {Math.round(rp.m / 10)}
-                  <Typography component="span" sx={{ fontSize: 14, color: "text.secondary", ml: 0.4 }}>
-                    /100
-                  </Typography>
+                  <OutOf>/ 100</OutOf>
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                   {rp.nShared} shared molecules
@@ -235,10 +240,11 @@ export function PairDialog({
 
             <Button
               fullWidth
+              size="large"
               variant="outlined"
               endIcon={<ArrowForwardIcon />}
               onClick={() => { onExplore(rp.other); onClose(); }}
-              sx={{ mt: 1.5 }}
+              sx={{ mt: 1.5, py: 1.4, fontSize: 16 }}
             >
               Explore {b.en}
             </Button>

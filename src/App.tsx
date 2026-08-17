@@ -239,9 +239,9 @@ export default function App() {
                   sx={{ minWidth: 0, textAlign: { xs: "center", sm: "left" } }}
                 >
                   {/* frameless: the illustration background blends into the page */}
-                  <Box sx={{ width: { xs: 184, md: 227 }, flexShrink: 0 }}>
+                  <Box sx={{ width: { xs: 236, md: 227 }, flexShrink: 0 }}>
                     <Box sx={{ aspectRatio: "1 / 1" }}>
-                      <IngredientImg ing={ing} sizes="227px" />
+                      <IngredientImg ing={ing} sizes="236px" />
                     </Box>
                   </Box>
                   <Box sx={{ minWidth: 0 }}>
