@@ -7,11 +7,11 @@ import ButtonBase from "@mui/material/ButtonBase";
 import Slider from "@mui/material/Slider";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
-import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { usePairData, topPartners } from "./data";
+import { revealSplash } from "./splash";
 import type { Partner } from "./types";
 import { IngredientImg } from "./components/molecules/IngredientVisual";
 import { IngredientSearch } from "./components/molecules/IngredientSearch";
@@ -99,13 +99,14 @@ export default function App() {
     [data],
   );
 
-  if (!data) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 20 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // the index.html splash is the only loading indicator: keep it up until
+  // data and fonts are both ready, then fade it out over the rendered hero
+  useEffect(() => {
+    if (!data) return;
+    document.fonts.ready.then(revealSplash);
+  }, [data]);
+
+  if (!data) return null;
 
   const select = (i: number) => setSelected(i);
 
@@ -159,7 +160,7 @@ export default function App() {
                   }}
                 >
                   <Box sx={{ aspectRatio: "1 / 1", width: "100%" }}>
-                    <IngredientImg ing={s} sizes="210px" />
+                    <IngredientImg ing={s} sizes="210px" spinner={false} />
                   </Box>
                 </ButtonBase>
               );

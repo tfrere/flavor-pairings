@@ -47,6 +47,7 @@ export function IngredientImg({
   className,
   spinnerSize = 18,
   inset = 0,
+  spinner = true,
 }: {
   ing: Ingredient;
   /** HTML `sizes` attribute, e.g. "96px" or "(max-width:600px) 45vw, 220px" */
@@ -55,6 +56,8 @@ export function IngredientImg({
   spinnerSize?: number;
   /** breathing room (px) between the illustration and its frame */
   inset?: number;
+  /** hide the loading placeholder (e.g. hero marquee: the splash covers it) */
+  spinner?: boolean;
 }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -71,7 +74,7 @@ export function IngredientImg({
 
   return (
     <Wrap aria-hidden>
-      {!loaded && (
+      {!loaded && spinner && (
         <Center>
           <CircularProgress size={spinnerSize} thickness={4.5} sx={{ color: "divider" }} />
         </Center>
