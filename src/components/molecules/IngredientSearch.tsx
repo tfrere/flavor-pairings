@@ -45,6 +45,10 @@ export function IngredientSearch({
   const [options, setOptions] = useState<Option[]>([]);
   const [semantic, setSemantic] = useState(isReady());
   const [loading, setLoading] = useState(false);
+  // popup state drives the "glued" look: the input flattens the corners on
+  // the side the dropdown opens from
+  const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<"bottom" | "top">("bottom");
   const queryId = useRef(0);
 
   const warmUp = () => {
@@ -119,7 +123,8 @@ export function IngredientSearch({
       value={null}
       blurOnSelect
       clearOnBlur
-      onOpen={warmUp}
+      onOpen={() => { warmUp(); setOpen(true); }}
+      onClose={() => setOpen(false)}
       popupIcon={<ExpandMoreRoundedIcon />}
       noOptionsText={
         input.trim().length < 2
@@ -127,14 +132,39 @@ export function IngredientSearch({
           : "No ingredient found"
       }
       slotProps={{
+        popper: {
+          modifiers: [
+            {
+              // mirror the actual popper placement into React state so the
+              // input can flatten the matching corners
+              name: "reportPlacement",
+              enabled: true,
+              phase: "afterWrite" as const,
+              fn: ({ state }: { state: { placement: string } }) => {
+                setPlacement(state.placement.startsWith("top") ? "top" : "bottom");
+              },
+            },
+          ],
+        },
         paper: {
           sx: {
-            mt: 1.25,
             borderRadius: "16px",
             border: 1,
             borderColor: "divider",
-            boxShadow: "0 16px 40px rgba(70,45,20,.14)",
             overflow: "hidden",
+            // glue the panel to the search bar on the shared edge
+            '[data-popper-placement*="bottom"] &': {
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
+              borderTop: 0,
+              boxShadow: "0 16px 40px rgba(70,45,20,.14)",
+            },
+            '[data-popper-placement*="top"] &': {
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+              borderBottom: 0,
+              boxShadow: "0 -16px 40px rgba(70,45,20,.14)",
+            },
           },
         },
         listbox: {
@@ -210,7 +240,18 @@ export function IngredientSearch({
               ) : (
                 params.InputProps.endAdornment
               ),
-              sx: { borderRadius: 99, bgcolor: "background.paper", pl: 2.5, pr: 3, py: 0.5 },
+              sx: {
+                borderRadius: open
+                  ? placement === "bottom"
+                    ? "28px 28px 0 0"
+                    : "0 0 28px 28px"
+                  : "99px",
+                transition: "border-radius .18s ease",
+                bgcolor: "background.paper",
+                pl: 2.5,
+                pr: 3,
+                py: 0.5,
+              },
             },
           }}
         />
