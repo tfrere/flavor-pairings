@@ -242,7 +242,7 @@ export function IngredientSearch({
               ),
               endAdornment: loading ? (
                 <InputAdornment position="end">
-                  <Tooltip title="Loading multilingual semantic search…">
+                  <Tooltip title="Loading search index…">
                     <CircularProgress size={18} />
                   </Tooltip>
                 </InputAdornment>

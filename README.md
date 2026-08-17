@@ -3,8 +3,8 @@ title: Flavor Pairings
 emoji: 🍓
 colorFrom: red
 colorTo: green
-sdk: static
-app_file: dist/index.html
+sdk: docker
+app_port: 7860
 pinned: false
 license: apache-2.0
 short_description: Ingredient pairing explorer - recipes vs molecules
@@ -27,27 +27,30 @@ molecules (ranked by distinctiveness) and the aroma descriptors they carry.
 
 ## Stack
 
-React 18 + Vite + Material UI (v6, CSS variables theme, light only).
-Fully static: the app fetches a single precomputed `data.json`.
+React 18 + Vite + Material UI (v6, CSS variables theme, light only), served
+by a small FastAPI backend (Docker Space) that also embeds search queries.
 
 - **Multilingual semantic search**: ingredient names are embedded offline
-  (`pipeline/embed.mjs`, paraphrase-multilingual-MiniLM-L12-v2); the browser
-  embeds the query with transformers.js (quantized, lazy-loaded) and ranks by
-  cosine similarity. Search works in ~50 languages.
+  (`pipeline/embed.mjs`, paraphrase-multilingual-MiniLM-L12-v2); the server
+  (`server/main.py`) embeds the query with the same quantized q8 ONNX model
+  (POST `/api/embed`) and the browser ranks by cosine similarity against the
+  precomputed vectors. Search works in ~50 languages with no heavy client
+  download (the in-browser model was ~160 MB).
 - **Illustrations**: 238 vintage botanical-plate style images, square 1:1
   with white backgrounds blended into the page via `mix-blend-mode: multiply`
   (`pipeline/slice_sheet4.py`, `pipeline/whiten_bg.py`).
 
 ```
 npm install
-npm run dev      # local dev server
-npm run build    # type-check + build to dist/ (served by the Space)
+uvicorn server.main:app --port 8000   # embedding API (vite proxies /api to it)
+npm run dev                           # local dev server
+npm run build                         # type-check + build to dist/
 ```
 
 ## Data pipeline
 
-Everything is precomputed into a single `data.json` (~1.7 MB); the site is
-fully static, no backend.
+Everything is precomputed into a single `data.json` (~1.7 MB); the only
+runtime backend work is embedding the search query.
 
 The pipeline lives in `pipeline/`:
 

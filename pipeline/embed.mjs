@@ -2,8 +2,8 @@
 // Output: public/embeddings.bin - Float32 row-major matrix, 2N x DIM
 //   row i     = embedding of ingredients[i].en
 //   row N + i = embedding of ingredients[i].fr
-// The browser encodes the query with the exact same model (quantized q8)
-// via transformers.js and ranks by cosine similarity (vectors normalized).
+// The server (server/main.py) encodes the query with the exact same model
+// (quantized q8 ONNX); the browser ranks by cosine similarity (normalized).
 import { pipeline } from "@huggingface/transformers";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
