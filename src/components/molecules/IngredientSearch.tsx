@@ -187,7 +187,7 @@ export function IngredientSearch({
       }}
       sx={{
         // real chevron, breathing room from the right edge, no flip jump
-        "& .MuiAutocomplete-endAdornment": { right: 20 },
+        "& .MuiAutocomplete-endAdornment": { right: 28 },
         "& .MuiAutocomplete-popupIndicator": {
           color: "text.secondary",
           transition: "transform .2s",
@@ -256,7 +256,7 @@ export function IngredientSearch({
                     : "0 0 28px 28px"
                   : "99px",
                 bgcolor: "background.paper",
-                pl: 2.5,
+                pl: 3.5,
                 pr: 3,
                 py: 0.5,
               },
