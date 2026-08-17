@@ -255,7 +255,6 @@ export function IngredientSearch({
                     ? "28px 28px 0 0"
                     : "0 0 28px 28px"
                   : "99px",
-                transition: "border-radius .18s ease",
                 bgcolor: "background.paper",
                 pl: 2.5,
                 pr: 3,
