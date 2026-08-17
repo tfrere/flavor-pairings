@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -26,6 +26,64 @@ function shuffle(n: number): number[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+/**
+ * Marquee wrapper that eases the CSS animation's playbackRate toward 0 on
+ * hover (and back to 1 on leave) so the strip decelerates smoothly instead
+ * of freezing.
+ */
+function SmoothMarquee({ children }: { children: React.ReactNode }) {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const target = useRef(1);
+
+  useEffect(() => {
+    let raf = 0;
+    let rate = 1;
+    const tick = () => {
+      rate += (target.current - rate) * 0.055;
+      const anim = trackRef.current?.getAnimations()[0];
+      if (anim) anim.playbackRate = Math.max(0, rate);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <Box
+      onMouseEnter={() => { target.current = 0; }}
+      onMouseLeave={() => { target.current = 1; }}
+      sx={{
+        width: "100vw",
+        overflow: "hidden",
+        mb: 4.5,
+        maskImage:
+          "linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+      }}
+    >
+      <Box
+        ref={trackRef}
+        sx={{
+          display: "flex",
+          width: "max-content",
+          gap: { xs: 2.5, md: 4 },
+          // the animated transform isolates blending, so the cream
+          // backdrop must live on this element for multiply to work
+          bgcolor: "background.default",
+          animation: "hero-marquee 90s linear infinite",
+          "@keyframes hero-marquee": {
+            from: { transform: "translateX(0)" },
+            to: { transform: "translateX(-50%)" },
+          },
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
 }
 
 export default function App() {
@@ -83,58 +141,30 @@ export default function App() {
           }}
         >
           {/* clickable marquee of illustrations above the title, full-bleed
-              with faded edges; pauses on hover so items can be clicked */}
-          <Box
-            sx={{
-              width: "100vw",
-              overflow: "hidden",
-              mb: 4.5,
-              maskImage:
-                "linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
-              "&:hover .marquee-track": { animationPlayState: "paused" },
-            }}
-          >
-            <Box
-              className="marquee-track"
-              sx={{
-                display: "flex",
-                width: "max-content",
-                gap: { xs: 2.5, md: 4 },
-                // the animated transform isolates blending, so the cream
-                // backdrop must live on this element for multiply to work
-                bgcolor: "background.default",
-                animation: "hero-marquee 90s linear infinite",
-                "@keyframes hero-marquee": {
-                  from: { transform: "translateX(0)" },
-                  to: { transform: "translateX(-50%)" },
-                },
-              }}
-            >
-              {[...marquee, ...marquee].map((i, k) => {
-                const s = data.ingredients[i];
-                return (
-                  <ButtonBase
-                    key={k}
-                    onClick={() => select(i)}
-                    disableRipple
-                    aria-label={`Explore ${s.en}`}
-                    tabIndex={k < marquee.length ? 0 : -1}
-                    sx={{
-                      width: { xs: 150, md: 210 },
-                      flexShrink: 0,
-                      "&:hover img": { transform: "scale(1.07)" },
-                    }}
-                  >
-                    <Box sx={{ aspectRatio: "1 / 1", width: "100%" }}>
-                      <IngredientImg ing={s} sizes="210px" />
-                    </Box>
-                  </ButtonBase>
-                );
-              })}
-            </Box>
-          </Box>
+              with faded edges; decelerates smoothly on hover */}
+          <SmoothMarquee>
+            {[...marquee, ...marquee].map((i, k) => {
+              const s = data.ingredients[i];
+              return (
+                <ButtonBase
+                  key={k}
+                  onClick={() => select(i)}
+                  disableRipple
+                  aria-label={`Explore ${s.en}`}
+                  tabIndex={k < marquee.length ? 0 : -1}
+                  sx={{
+                    width: { xs: 150, md: 210 },
+                    flexShrink: 0,
+                    "&:hover img": { transform: "scale(1.07)" },
+                  }}
+                >
+                  <Box sx={{ aspectRatio: "1 / 1", width: "100%" }}>
+                    <IngredientImg ing={s} sizes="210px" />
+                  </Box>
+                </ButtonBase>
+              );
+            })}
+          </SmoothMarquee>
 
           <Typography variant="h1" sx={{ fontSize: "clamp(52px, 8vw, 92px)" }}>
             Flavor Pairings

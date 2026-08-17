@@ -3,6 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import Box from "@mui/material/Box";
@@ -16,6 +17,8 @@ interface Option {
   index: number;
 }
 
+const MAX_RESULTS = 6;
+
 const strip = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 /** Substring fallback used while the embedding model is still loading. */
@@ -28,7 +31,7 @@ function fuzzy(ingredients: Ingredient[], q: string): Option[] {
       const ys = strip(y.ing.en).startsWith(q) ? 0 : 1;
       return xs - ys || y.ing.nrec - x.ing.nrec;
     })
-    .slice(0, 8);
+    .slice(0, MAX_RESULTS);
 }
 
 export function IngredientSearch({
@@ -86,7 +89,7 @@ export function IngredientSearch({
           // similarity: only trust rankings whose best hit stands out
           .filter((s) => s.boost > 0 || (margin >= 0.3 && s.sim >= top1 - 0.1))
           .sort((a, b) => b.score - a.score)
-          .slice(0, 8)
+          .slice(0, MAX_RESULTS)
           .map(({ index }) => ({ ing: ingredients[index], index }));
         setOptions(picked);
       } catch {
@@ -117,16 +120,69 @@ export function IngredientSearch({
       blurOnSelect
       clearOnBlur
       onOpen={warmUp}
+      popupIcon={<ExpandMoreRoundedIcon />}
       noOptionsText={
         input.trim().length < 2
           ? "Type at least 2 characters"
           : "No ingredient found"
       }
+      slotProps={{
+        paper: {
+          sx: {
+            mt: 1.25,
+            borderRadius: "16px",
+            border: 1,
+            borderColor: "divider",
+            boxShadow: "0 16px 40px rgba(70,45,20,.14)",
+            overflow: "hidden",
+          },
+        },
+        listbox: {
+          sx: {
+            py: 1,
+            "& .MuiAutocomplete-option": {
+              px: 2,
+              py: 1.1,
+              mx: 1,
+              borderRadius: "10px",
+              '&[aria-selected="true"], &.Mui-focused, &:hover': {
+                bgcolor: "#f7f1de",
+              },
+            },
+          },
+        },
+      }}
+      sx={{
+        // real chevron, breathing room from the right edge, no flip jump
+        "& .MuiAutocomplete-endAdornment": { right: 20 },
+        "& .MuiAutocomplete-popupIndicator": {
+          color: "text.secondary",
+          transition: "transform .2s",
+        },
+      }}
       renderOption={(props, o) => (
-        <Box component="li" {...props} key={o.index} sx={{ display: "flex", gap: 1.4, alignItems: "center" }}>
-          <IngredientVisual ing={o.ing} size={32} />
-          <Typography sx={{ flex: 1 }}>{o.ing.en}</Typography>
-          <Typography variant="body2" color="text.secondary">
+        <Box
+          component="li"
+          {...props}
+          key={o.index}
+          sx={{ display: "flex", gap: 1.75, alignItems: "center" }}
+        >
+          <IngredientVisual ing={o.ing} size={46} round={false} />
+          <Typography
+            sx={{
+              flex: 1,
+              fontFamily: "'Fraunces', serif",
+              fontSize: 17.5,
+              fontWeight: 550,
+              textTransform: "capitalize",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {o.ing.en}
+          </Typography>
+          <Typography sx={{ fontSize: 12.5, color: "text.secondary", flexShrink: 0 }}>
             {o.ing.nrec.toLocaleString("en-US")} recipes
           </Typography>
         </Box>
@@ -154,7 +210,7 @@ export function IngredientSearch({
               ) : (
                 params.InputProps.endAdornment
               ),
-              sx: { borderRadius: 99, bgcolor: "background.paper", px: 2.5, py: 0.5 },
+              sx: { borderRadius: 99, bgcolor: "background.paper", pl: 2.5, pr: 3, py: 0.5 },
             },
           }}
         />
