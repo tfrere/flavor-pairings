@@ -11,6 +11,12 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍓</text></svg>">
 </head>
 <body>
+  <!-- splash shown until the app is mounted and fonts are loaded (kills the
+       serif font flicker); removed from src/main.tsx -->
+  <div id="splash" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#f7f1de;transition:opacity .35s ease">
+    <div style="width:34px;height:34px;border-radius:50%;border:3px solid rgba(70,45,20,.18);border-top-color:rgba(70,45,20,.65);animation:splash-spin .8s linear infinite"></div>
+  </div>
+  <style>@keyframes splash-spin{to{transform:rotate(360deg)}}</style>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

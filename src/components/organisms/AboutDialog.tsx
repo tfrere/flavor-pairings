@@ -99,7 +99,15 @@ export function AboutDialog({ open, onClose, nIngredients, nPairs }: AboutDialog
         backdrop: {
           sx: {
             backgroundColor: "rgba(43, 33, 24, 0.35)",
-            backdropFilter: "blur(7px)",
+            // blur lives on a pseudo-element that is never opacity-animated:
+            // Chromium drops backdrop-filter after a transition ends on the
+            // same element (the backdrop itself fades in/out)
+            "&::before": {
+              content: '""',
+              position: "absolute",
+              inset: 0,
+              backdropFilter: "blur(7px)",
+            },
           },
         },
       }}

@@ -13,3 +13,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </ThemeProvider>
   </React.StrictMode>,
 );
+
+// fade the splash out once fonts are ready so the serif never flickers in;
+// the 2.5s cap keeps a slow font CDN from blocking the app
+const splash = document.getElementById("splash");
+if (splash) {
+  const reveal = () => {
+    splash.style.opacity = "0";
+    setTimeout(() => splash.remove(), 400);
+  };
+  Promise.race([
+    document.fonts.ready,
+    new Promise((r) => setTimeout(r, 2500)),
+  ]).then(reveal);
+}
