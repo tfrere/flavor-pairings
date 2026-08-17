@@ -5,10 +5,8 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import ButtonBase from "@mui/material/ButtonBase";
 import Slider from "@mui/material/Slider";
-import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Tooltip from "@mui/material/Tooltip";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { usePairData, topPartners } from "./data";
 import { revealSplash } from "./splash";
@@ -182,13 +180,12 @@ export default function App() {
             <IngredientSearch ingredients={data.ingredients} onSelect={select} />
           </Box>
 
-          <Button
-            startIcon={<HelpOutlineIcon />}
-            onClick={() => setAboutOpen(true)}
-            sx={{ mt: 4, color: "text.secondary", fontWeight: 500 }}
+          <Typography
+            variant="body2"
+            sx={{ mt: 3.5, color: "text.secondary" }}
           >
-            How does it work?
-          </Button>
+            …or click any illustration in the carousel above
+          </Typography>
         </Box>
       ) : (
         /* compact sticky header: title + search stay visible while scrolling */
@@ -422,6 +419,15 @@ export default function App() {
         }
       >
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
+          <Link
+            component="button"
+            type="button"
+            onClick={() => setAboutOpen(true)}
+            sx={{ verticalAlign: "baseline" }}
+          >
+            How does it work?
+          </Link>
+          <Box component="span" sx={{ mx: 1.25, color: "divider" }}>·</Box>
           A cooking experiment by{" "}
           <Link href="https://tfrere.com" target="_blank" rel="noopener">Thibaud Frere</Link>
         </Typography>

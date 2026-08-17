@@ -189,10 +189,10 @@ export function IngredientSearch({
         // real chevron, breathing room from the right edge, no flip jump.
         // !important: Autocomplete's own inputRoot/endAdornment rules have
         // higher specificity than sx-generated classes and win otherwise
-        "& .MuiAutocomplete-endAdornment": { right: "28px !important" },
+        "& .MuiAutocomplete-endAdornment": { right: "22px !important" },
         "& .MuiAutocomplete-inputRoot": {
-          paddingLeft: "28px !important",
-          paddingRight: "64px !important",
+          paddingLeft: "22px !important",
+          paddingRight: "56px !important",
         },
         "& .MuiAutocomplete-popupIndicator": {
           color: "text.secondary",
