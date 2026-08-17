@@ -1,0 +1,38 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # the Space (static SDK) serves dist/index.html, so the build output
+      # is committed on top of the source tree and force-pushed
+      - name: Commit build and push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git lfs install
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f dist
+          git commit -m "build: deploy ${GITHUB_SHA::7}"
+          git push --force \
+            "https://tfrere:${HF_TOKEN}@huggingface.co/spaces/tfrere/flavor-pairings" \
+            HEAD:main
