@@ -169,14 +169,17 @@ export function IngredientSearch({
         },
         listbox: {
           sx: {
-            py: 1,
+            py: 0,
             "& .MuiAutocomplete-option": {
-              px: 2,
+              pl: 1.25,
+              pr: 2.5,
               py: 1.1,
-              mx: 1,
-              borderRadius: "10px",
               '&[aria-selected="true"], &.Mui-focused, &:hover': {
                 bgcolor: "#f7f1de",
+              },
+              "& + .MuiAutocomplete-option": {
+                borderTop: "1px solid",
+                borderTopColor: "divider",
               },
             },
           },
@@ -212,8 +215,14 @@ export function IngredientSearch({
           >
             {o.ing.en}
           </Typography>
-          <Typography sx={{ fontSize: 12.5, color: "text.secondary", flexShrink: 0 }}>
-            {o.ing.nrec.toLocaleString("en-US")} recipes
+          <Typography sx={{ fontSize: 12.5, flexShrink: 0 }}>
+            <Box component="span" sx={{ color: "secondary.main", fontWeight: 600 }}>
+              {o.ing.nrec.toLocaleString("en-US")} recipes
+            </Box>
+            <Box component="span" sx={{ color: "divider", mx: 0.7 }}>·</Box>
+            <Box component="span" sx={{ color: "primary.main", fontWeight: 600 }}>
+              {o.ing.nmol} molecules
+            </Box>
           </Typography>
         </Box>
       )}
